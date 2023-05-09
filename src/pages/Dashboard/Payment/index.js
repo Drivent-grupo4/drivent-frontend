@@ -1,5 +1,5 @@
 import Ticket from '../../../components/Ticket';
-import PaymentComponent from '../../../components/Payment/Payment';
+import PaymentComponent from '../../../components/PaymentComponent';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import useTicket from '../../../hooks/api/useTicket';
 
