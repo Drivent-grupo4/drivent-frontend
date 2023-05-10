@@ -6,6 +6,7 @@ import TicketContext from '../contexts/TicketContext';
 import { postPayment } from '../services/paymentApi';
 import useToken from '../hooks/useToken';
 import { PaymentConfirmation } from './PaymentConfirmation';
+import { toast } from 'react-toastify';
 
 export default function PaymentComponent({ ticket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
@@ -46,11 +47,11 @@ export default function PaymentComponent({ ticket }) {
     };
 
     try {
-      const response = await postPayment(token, body);
-      console.log(response);
+      await postPayment(token, body);
       setPayed(true);
+      toast ('Pagamento feito com sucesso!');
     } catch (e) {
-      alert(e);
+      toast ('Não foi possível realizar o pagamento.');
     }
   }
 
