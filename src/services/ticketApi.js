@@ -10,10 +10,19 @@ export async function getTickets(token) {
 }
 
 export async function getTicketTypes(token) {
-  const response = await api.get('/tickets/types', {
+  const { data } = await api.get('/tickets/types', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
+  return data;
+}
+
+export async function createTicket(payload, token) {
+  const { data } = await api.post('/tickets', payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
 }
