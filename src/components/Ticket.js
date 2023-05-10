@@ -4,9 +4,11 @@ import useToken from '../hooks/useToken';
 import { createTicket, getTicketTypes } from '../services/ticketApi';
 import HostingSquare from './HostingSquare';
 import TicketSquare from './TicketSquare';
+import { useContext } from 'react';
+import TicketContext from '../contexts/TicketContext';
 
 export default function Ticket({ enrollment, getTicket }) {
-  const [ticketPrice, setTicketPrice] = useState(0);
+  const { ticketPrice, setTicketPrice } = useContext(TicketContext);
   const [ticketTypeId, setTicketTypeId] = useState(null);
   const [hotelTypeId, setHotelTypeId] = useState(null);
   const [showHosting, setShowHosting] = useState(false);
