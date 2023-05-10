@@ -1,17 +1,15 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 
-export default function TicketSquare({ info, index, setTicketPrice, setTicketTypeId }) {
-  const [selected, setSelected] = useState(false);
-
+export default function TicketSquare({ info, index, setTicketPrice, setTicketTypeId, ticketTypeId, setShowHosting, setShowTotal }) {
   return (
     <TicketSquareStyle
       key={index}
-      selectedStyle={ selected }
+      selectedStyle={ ticketTypeId === info.id }
       onClick={() => {
         setTicketPrice(info.price);
-        setTicketTypeId({ ticketTypeId: info.id });
-        setSelected(true);
+        setTicketTypeId(info.id);
+        setShowHosting(info.includesHotel);
+        !info.includesHotel && setShowTotal(true);
       }}
     >
       <h3>{info.name}</h3> <p>R$ {info.price.toString()}</p>
