@@ -10,25 +10,11 @@ import TicketContext from '../contexts/TicketContext';
 export default function Ticket({ enrollment, getTicket }) {
   const { ticketPrice, setTicketPrice } = useContext(TicketContext);
   const [ticketTypeId, setTicketTypeId] = useState(null);
-  const [hotelTypeId, setHotelTypeId] = useState(null);
   const [showHosting, setShowHosting] = useState(false);
   const [showTotal, setShowTotal] = useState(false);
-  const [data, setData] = useState();
   const token = useToken();
 
-  async function getTicketType() {
-    try {
-      const ticketType = await getTicketTypes(token);
-
-      console.log('type', ticketType);
-
-      setData(ticketType);
-    } catch (error) {
-      alert('Desculpe, houve um erro!');
-    }
-  }
-
-  async function createTicketType() {
+  async function sendTicketType() {
     try {
       const ticket = await createTicket({ ticketTypeId }, token);
 
@@ -40,33 +26,18 @@ export default function Ticket({ enrollment, getTicket }) {
     }
   }
 
-  useEffect(() => {
-    getTicketType();
-  }, []);
-
-  if (data === undefined) {
-    return <h1>Loading...</h1>;
-  }
-
   return (
     <Main>
       <div className="title"> Ingresso e pagamento </div>
       <Modality>
         <h2>Primeiro, escolha sua modalidade de ingresso</h2>
         <nav>
-          { data.map((info, index) => (
-            <TicketSquare
-              info={ info }
-              index={ index }
-              ticketTypeId={ ticketTypeId }
-              setTicketTypeId={ setTicketTypeId }
-              setTicketPrice={ setTicketPrice }
-              setShowHosting = { setShowHosting }
-              showHosting = { showHosting }
-              setShowTotal={ setShowTotal }
-              showTotal={ showTotal }
-            />
-          )) }
+          <TicketSquare
+            setTicketPrice={setTicketPrice}
+            setShowHosting={setShowHosting}
+            setShowTotal={setShowTotal}
+            setTicketTypeId={setTicketTypeId}
+          />
         </nav>
       </Modality>
       {
@@ -74,17 +45,11 @@ export default function Ticket({ enrollment, getTicket }) {
         <Modality>
           <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
           <nav>
-            { data.map((info, index) => (
-              <HostingSquare
-                info={ info }
-                index={ index }
-                hotelTypeId={ hotelTypeId }
-                setHotelTypeId={ setHotelTypeId }
-                setTicketPrice={ setTicketPrice }
-                setShowTotal={ setShowTotal }
-                showTotal={ showTotal }
-              />
-            )) }
+            <HostingSquare 
+              setTicketPrice={setTicketPrice}
+              setShowTotal={setShowTotal}
+              setTicketTypeId={setTicketTypeId}
+            />
           </nav>
         </Modality>
       }
@@ -94,7 +59,7 @@ export default function Ticket({ enrollment, getTicket }) {
           <p>
             Fechado! O total ficou em <span style={{ fontWeight: 'bold' }}>R$ {ticketPrice.toString()}</span>. Agora é só confirmar:
           </p>
-          <button onClick={() => createTicketType()}>RESERVAR INGRESSO</button>
+          <button onClick={() => sendTicketType()}>RESERVAR INGRESSO</button>
         </CloseTicket>
       }
     </Main>

@@ -21,9 +21,9 @@ export default function PaymentComponent({ enrollment, ticket, getTicket }) {
       <nav>
         <div>
           <h3>
-            {ticket.TicketType.name} + {withHotel ? 'Com Hotel' : 'Sem Hotel'}
+            {ticket.TicketType.name}
           </h3>
-          <p>R$ {ticketPrice}</p>
+          <p>R$ {ticket.TicketType.price}</p>
         </div>
       </nav>
 
