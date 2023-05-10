@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import Card from '../assets/images/card-image.png';
 import { useState } from 'react';
+import { useContext } from 'react';
+import TicketContext from '../contexts/TicketContext';
 
-export default function PaymentComponent() {
+export default function PaymentComponent({ enrollment, ticket, getTicket }) {
+  const { ticketPrice, withHotel } = useContext(TicketContext);
   const [cardNumber, setCardNumber] = useState('');
   const [name, setName] = useState('');
   const [validThru, setValidThru] = useState();
@@ -17,8 +20,10 @@ export default function PaymentComponent() {
       <h2>Ingresso escolhido</h2>
       <nav>
         <div>
-          <h3>Presencial + Com Hotel</h3>
-          <p>R$ 600</p>
+          <h3>
+            {ticket.TicketType.name} + {withHotel ? 'Com Hotel' : 'Sem Hotel'}
+          </h3>
+          <p>R$ {ticketPrice}</p>
         </div>
       </nav>
 
