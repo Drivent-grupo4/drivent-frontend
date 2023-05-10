@@ -3,53 +3,106 @@ import Card from '../assets/images/card-image.png';
 import { useState } from 'react';
 import { useContext } from 'react';
 import TicketContext from '../contexts/TicketContext';
+import { postPayment } from '../services/paymentApi';
+import useToken from '../hooks/useToken';
 
 export default function PaymentComponent({ enrollment, ticket, getTicket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
   const [cardNumber, setCardNumber] = useState('');
   const [name, setName] = useState('');
   const [validThru, setValidThru] = useState();
-  const [cvc, setCvc] = useState('');
+  const [cvv, setCvv] = useState('');
+  const token = useToken();
+  
+  async function pay(e) {
+    e.preventDefault();
 
-  function pay() {
-    console.log('finalizar pagamento');
+    let issuer;
+    const visaRegex = /^4/;
+    const mastercardRegex = /^5[1-5]/;
+    const amexRegex = /^3[47]/;
+    const discoverRegex = /^(6011|65|64[4-9])/;
+
+    if (visaRegex.test(cardNumber)) issuer = 'Visa';
+    if (mastercardRegex.test(cardNumber)) issuer = 'Mastercard';
+    if (amexRegex.test(cardNumber)) issuer = 'American Express';
+    if (discoverRegex.test(cardNumber)) issuer = 'Discover';
+
+    const [month, year] = validThru.split('/');
+    const adjustedYear = `20${year}`;
+    const expirationDate = new Date(adjustedYear, month, 1);
+
+    const body = {
+      ticketId: ticket.id,
+      cardData: {
+        issuer,
+        number: Number(cardNumber),
+        name,
+        expirationDate,
+        cvv
+      }
+    };
+
+    try {
+      const response = await postPayment(token, body);
+      console.log(response);
+    } catch (e) {
+      alert(e);
+    }
   }
 
   return (
-    <Modality>
-      <h2>Ingresso escolhido</h2>
-      <nav>
-        <div>
-          <h3>
-            {ticket.TicketType.name}
-          </h3>
-          <p>R$ {ticket.TicketType.price}</p>
-        </div>
-      </nav>
+    <Main>
+      <h4> Ingresso e pagamento </h4>
+      <Modality>
+        <h2>Ingresso escolhido</h2>
+        <nav>
+          <div>
+            <h3>
+              {ticket.TicketType.name} + {withHotel ? 'Com Hotel' : 'Sem Hotel'}
+            </h3>
+            <p>R$ {ticketPrice}</p>
+          </div>
+        </nav>
 
-      <h2>Pagamento</h2>
-      <CardInfo>
-        <img src={Card} alt='' />
-        <div>
-          <form onSubmit={pay}>
-            <Inputs>
-              <NormalInputs onChange={(e) => setCardNumber(e.target.value)} value={cardNumber} type='number' placeholder='Card Number' required></NormalInputs>
-              <label>E.g.: 49..., 51..., 36..., 37...</label>
-              <NormalInputs onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Name' required></NormalInputs>
-              <div>
-                <ValidInput onChange={(e) => setValidThru(e.target.value)} value={validThru} type='text' placeholder='Valid Thru' required></ValidInput>
-                <CvcInput onChange={(e) => setCvc(e.target.value)} value={cvc} type='number' placeholder='CVC' required></CvcInput>
-              </div>
-              <button><h1>FINALIZAR PAGAMENTO</h1></button>
-            </Inputs>
-          </form>
-        </div>
-      </CardInfo>
+        <h2>Pagamento</h2>
+        <CardInfo>
+          <img src={Card} alt='' />
+          <div>
+            <form onSubmit={pay}>
+              <Inputs>
 
-    </Modality>
+                <NormalInputs onChange={(e) => setCardNumber(Number(e.target.value))} value={cardNumber} type='text' placeholder='Card Number' maxLength={16} pattern='\d*' inputMode='numeric' required></NormalInputs>
+                <label>E.g.: 49..., 51..., 36..., 37...</label>
+                <NormalInputs onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Name' required></NormalInputs>
+
+                <div>
+
+                  <ValidInput onChange={(e) => setValidThru(e.target.value)} value={validThru} type='text' placeholder='Valid Thru' maxLength={5} pattern='\d{2}/\d{2}' required></ValidInput>
+                  <CvvInput onChange={(e) => setCvv(Number(e.target.value))} value={cvv} type='text' placeholder='CVV' maxLength={3} pattern='\d*' inputMode='numeric' required></CvvInput>
+
+                </div>
+                <button type='submit'><h1>FINALIZAR PAGAMENTO</h1></button>
+              </Inputs>
+            </form>
+          </div>
+        </CardInfo>
+
+      </Modality>
+    </Main>
   );
 }
 
+const Main = styled.main`
+  height: 90%;
+  h4 {
+    color: #000000;
+    font-size: 32px;
+    font-weight: 400;
+    font-family: 'Roboto', sans-serif;
+    line-height: 45px;
+  }
+`;
 const Modality = styled.aside`
   padding-top: 32px;
   display: flex;
@@ -159,6 +212,6 @@ width: 370px;
 const ValidInput = styled.input`
 width: 225px;
 `;
-const CvcInput = styled.input`
+const CvvInput = styled.input`
 width: 125px;
 `;
