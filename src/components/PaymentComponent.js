@@ -5,13 +5,15 @@ import { useContext } from 'react';
 import TicketContext from '../contexts/TicketContext';
 import { postPayment } from '../services/paymentApi';
 import useToken from '../hooks/useToken';
+import { PaymentConfirmation } from './PaymentConfirmation';
 
-export default function PaymentComponent({ enrollment, ticket, getTicket }) {
+export default function PaymentComponent({ ticket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
   const [cardNumber, setCardNumber] = useState('');
   const [name, setName] = useState('');
   const [validThru, setValidThru] = useState();
   const [cvv, setCvv] = useState('');
+  const [payed, setPayed] = useState(false);
   const token = useToken();
   
   async function pay(e) {
@@ -46,6 +48,7 @@ export default function PaymentComponent({ enrollment, ticket, getTicket }) {
     try {
       const response = await postPayment(token, body);
       console.log(response);
+      setPayed(true);
     } catch (e) {
       alert(e);
     }
@@ -66,7 +69,7 @@ export default function PaymentComponent({ enrollment, ticket, getTicket }) {
         </nav>
 
         <h2>Pagamento</h2>
-        <CardInfo>
+        {!payed && <CardInfo>
           <img src={Card} alt='' />
           <div>
             <form onSubmit={pay}>
@@ -86,7 +89,9 @@ export default function PaymentComponent({ enrollment, ticket, getTicket }) {
               </Inputs>
             </form>
           </div>
-        </CardInfo>
+        </CardInfo>}
+
+        {payed && <PaymentConfirmation />}
 
       </Modality>
     </Main>

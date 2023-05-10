@@ -16,6 +16,7 @@ export default function HostingSquare({ setTicketPrice, setShowTotal, setTicketT
           setShowTotal(true);
           setTicketTypeId(3);
           setSelectedStyle(3);
+          setWithHotel(false);
         }}
       >
         <h3>Sem Hotel<p>+ R$ 0</p></h3>
@@ -27,6 +28,7 @@ export default function HostingSquare({ setTicketPrice, setShowTotal, setTicketT
           setShowTotal(true);
           setTicketTypeId(2);
           setSelectedStyle(2);
+          setWithHotel(true);
         }}
       >
         <h3>Com Hotel<p>+ R$ 350</p></h3>
