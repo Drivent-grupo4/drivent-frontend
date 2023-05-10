@@ -27,42 +27,46 @@ export default function Ticket({ enrollment, getTicket }) {
   }
 
   return (
-    <Main>
-      <div className="title"> Ingresso e pagamento </div>
-      <Modality>
-        <h2>Primeiro, escolha sua modalidade de ingresso</h2>
-        <nav>
-          <TicketSquare
-            setTicketPrice={setTicketPrice}
-            setShowHosting={setShowHosting}
-            setShowTotal={setShowTotal}
-            setTicketTypeId={setTicketTypeId}
-          />
-        </nav>
-      </Modality>
-      {
-        showHosting &&
+    enrollment ?
+      <Main>
+        <div className="title"> Ingresso e pagamento </div>
         <Modality>
-          <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
+          <h2>Primeiro, escolha sua modalidade de ingresso</h2>
           <nav>
-            <HostingSquare 
+            <TicketSquare
               setTicketPrice={setTicketPrice}
+              setShowHosting={setShowHosting}
               setShowTotal={setShowTotal}
               setTicketTypeId={setTicketTypeId}
             />
           </nav>
         </Modality>
-      }
-      {
-        showTotal &&
-        <CloseTicket>
-          <p>
-            Fechado! O total ficou em <span style={{ fontWeight: 'bold' }}>R$ {ticketPrice.toString()}</span>. Agora é só confirmar:
-          </p>
-          <button onClick={() => sendTicketType()}>RESERVAR INGRESSO</button>
-        </CloseTicket>
-      }
-    </Main>
+        {
+          showHosting &&
+          <Modality>
+            <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
+            <nav>
+              <HostingSquare
+                setTicketPrice={setTicketPrice}
+                setShowTotal={setShowTotal}
+                setTicketTypeId={setTicketTypeId}
+              />
+            </nav>
+          </Modality>
+        }
+        {
+          showTotal &&
+          <CloseTicket>
+            <p>
+              Fechado! O total ficou em <span style={{ fontWeight: 'bold' }}>R$ {ticketPrice.toString()}</span>. Agora é só confirmar:
+            </p>
+            <button onClick={() => sendTicketType()}>RESERVAR INGRESSO</button>
+          </CloseTicket>
+        }
+      </Main>
+      :
+      <WarningMessage>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</WarningMessage>
+
   );
 };
 
@@ -75,6 +79,17 @@ const Main = styled.main`
     font-family: 'Roboto', sans-serif;
     line-height: 45px;
   }
+`;
+
+const WarningMessage = styled.div`
+  width: 388px;
+  height: 46px;
+  font-family: 'Roboto';
+  font-size: 20px;
+  text-align: center;
+  color: #8E8E8E;
+  margin-top: 317px;
+  margin-left: 256px;
 `;
 
 const Modality = styled.aside`
