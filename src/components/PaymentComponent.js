@@ -7,16 +7,22 @@ import { postPayment } from '../services/paymentApi';
 import useToken from '../hooks/useToken';
 import { PaymentConfirmation } from './PaymentConfirmation';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 export default function PaymentComponent({ ticket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
   const [cardNumber, setCardNumber] = useState('');
   const [name, setName] = useState('');
-  const [validThru, setValidThru] = useState();
+  const [validThru, setValidThru] = useState('');
   const [cvv, setCvv] = useState('');
   const [payed, setPayed] = useState(false);
   const token = useToken();
+  console.log('PAY', ticket);
   
+  useEffect(() => {
+    setPayed(ticket.status === 'PAID');
+  }, []);
+
   async function pay(e) {
     e.preventDefault();
 
@@ -45,7 +51,7 @@ export default function PaymentComponent({ ticket }) {
         cvv
       }
     };
-
+    
     try {
       await postPayment(token, body);
       setPayed(true);
@@ -65,7 +71,7 @@ export default function PaymentComponent({ ticket }) {
             <h3>
               {ticket.TicketType.name} + {withHotel ? 'Com Hotel' : 'Sem Hotel'}
             </h3>
-            <p>R$ {ticketPrice}</p>
+            <p>R$ {ticketPrice === 0 ? ticket.TicketType.price : ticketPrice}</p>
           </div>
         </nav>
 
