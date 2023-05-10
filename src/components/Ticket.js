@@ -60,7 +60,9 @@ export default function Ticket({ enrollment, getTicket }) {
               setTicketTypeId={ setTicketTypeId }
               setTicketPrice={ setTicketPrice }
               setShowHosting = { setShowHosting }
+              showHosting = { showHosting }
               setShowTotal={ setShowTotal }
+              showTotal={ showTotal }
             />
           )) }
         </nav>
@@ -78,6 +80,7 @@ export default function Ticket({ enrollment, getTicket }) {
                 setHotelTypeId={ setHotelTypeId }
                 setTicketPrice={ setTicketPrice }
                 setShowTotal={ setShowTotal }
+                showTotal={ showTotal }
               />
             )) }
           </nav>
@@ -129,8 +132,9 @@ const Modality = styled.aside`
     justify-content: flex-start;
     gap: 24px;
 
-    div {
+    button {
       display: flex;
+      border: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;

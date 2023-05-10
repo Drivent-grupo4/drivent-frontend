@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
-export default function HostingSquare({ info, index, setTicketPrice, setHotelTypeId, hotelTypeId, setShowTotal }) {
+export default function HostingSquare({ info, index, setTicketPrice, setHotelTypeId, hotelTypeId, setShowTotal, showTotal }) {
   const noHotel = index === 0;
 
   return (
     <HostingSquareStyle
       key={index}
       selectedStyle={ hotelTypeId === info.id }
+      disabled={ showTotal }
       onClick={() => {
         setTicketPrice((prevState) => prevState + (noHotel ? 0 : 250));
         setHotelTypeId(info.id);
@@ -18,6 +19,6 @@ export default function HostingSquare({ info, index, setTicketPrice, setHotelTyp
   );
 }
 
-const HostingSquareStyle = styled.div`
+const HostingSquareStyle = styled.button`
   background: ${({ selectedStyle }) => selectedStyle ? '#ffeed2' : ''} 
 `;

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
-export default function TicketSquare({ info, index, setTicketPrice, setTicketTypeId, ticketTypeId, setShowHosting, setShowTotal }) {
+export default function TicketSquare({ info, index, setTicketPrice, setTicketTypeId, ticketTypeId, setShowHosting, setShowTotal, showHosting, showTotal }) {
   return (
     <TicketSquareStyle
       key={index}
       selectedStyle={ ticketTypeId === info.id }
+      disabled={ showTotal | showHosting }
       onClick={() => {
         setTicketPrice(info.price);
         setTicketTypeId(info.id);
@@ -17,6 +18,6 @@ export default function TicketSquare({ info, index, setTicketPrice, setTicketTyp
   );
 }
 
-const TicketSquareStyle = styled.div`
+const TicketSquareStyle = styled.button`
   background: ${({ selectedStyle }) => selectedStyle ? '#ffeed2' : ''} 
 `;
