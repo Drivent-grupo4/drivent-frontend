@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useContext } from 'react';
 import styled from 'styled-components';
+import TicketContext from '../contexts/TicketContext';
 
 export default function HostingSquare({ setTicketPrice, setShowTotal, setTicketTypeId }) {
   const [selectedStyle, setSelectedStyle] = useState(null);
+  const { setWithHotel } = useContext(TicketContext);
 
   return (
     <>
