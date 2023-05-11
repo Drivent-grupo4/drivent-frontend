@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import useToken from '../hooks/useToken';
-import { createTicket, getTicketTypes } from '../services/ticketApi';
+import { createTicket } from '../services/ticketApi';
 import HostingSquare from './HostingSquare';
 import TicketSquare from './TicketSquare';
 import { useContext } from 'react';

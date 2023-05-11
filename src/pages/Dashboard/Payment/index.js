@@ -7,8 +7,6 @@ export default function Payment() {
   const { enrollment } = useEnrollment();
   const { ticket, getTicket } = useTicket();
 
-  console.log('ticket: ', ticket);
-
   return (
     <>
       {!ticket ? <Ticket enrollment={enrollment} getTicket={getTicket}/> 

@@ -12,7 +12,7 @@ export default function PaymentComponent({ ticket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
   const [cardNumber, setCardNumber] = useState('');
   const [name, setName] = useState('');
-  const [validThru, setValidThru] = useState();
+  const [validThru, setValidThru] = useState('');
   const [cvv, setCvv] = useState('');
   const [payed, setPayed] = useState(false);
   const token = useToken();
