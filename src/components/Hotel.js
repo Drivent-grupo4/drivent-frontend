@@ -1,7 +1,20 @@
 import styled from 'styled-components';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import { getHotels } from '../services/hotelApi';
+import useToken from '../hooks/useToken';
 
-export default function Hotel({ ticket, token }) {
+export default function Hotel({ ticket }) {
+  const token = useToken();
+  async function listHotels() {
+    const data = await getHotels(token);
+
+    return data;
+  }
+
+  useEffect(() => {
+    listHotels();
+  }, []);
+
   return (
     ticket ?
       (ticket.status === 'PAID' ?
@@ -16,7 +29,11 @@ export default function Hotel({ ticket, token }) {
               <Modality>
                 <h2>Primeiro, escolha seu hotel</h2>
                 <nav>
-                  
+                  <HotelContainer>
+                    <HotelThumb src="https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350"
+                      alt="new" />
+                    <h4>Driven Resort</h4>
+                  </HotelContainer>
                 </nav>
               </Modality>
             </Main>
@@ -30,6 +47,28 @@ export default function Hotel({ ticket, token }) {
         Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem
       </WarningMessage>);
 };
+
+const HotelContainer = styled.div`
+  width: 196px;
+  height: 264px;
+  background: #EBEBEB;
+  border-radius: 10px;
+  h4 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    color: #343434;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+`;
+
+const HotelThumb = styled.img`
+  width: 168px;
+  height: 109px;
+  border-radius: 5px;
+  margin-left: 14px;
+  margin-top: 16px;
+`;
 
 const WarningMessage = styled.div`
     width: 420px;
