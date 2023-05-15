@@ -64,7 +64,7 @@ export default function Hotel({ ticket }) {
                 <HotelPlaceholder
                   key={index}
                   hotel={hotel}
-                  index={index}
+                  index={hotel.id}
                   hotelId={hotel.id}
                   setShowHosting={setShowHosting}
                   listRooms={listRooms}
