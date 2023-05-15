@@ -1,26 +1,25 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import { getHotels } from '../services/hotelApi';
 import useToken from '../hooks/useToken';
 import useHotel from '../hooks/api/useHotel';
-import useRooms from '../hooks/api/useRoom';
 import { getRooms } from '../services/roomApi';
-import { getAccommodationTypes, getAvailability } from './acomodations';
 import { PersonOutline, Person } from 'react-ionicons';
 import HotelPlaceholder from './HotelComponent';
+import { getBookings, saveBooking } from '../services/bookingApi';
+import { toast } from 'react-toastify';
+import useCapacity from '../hooks/api/useCapacity';
 
 export default function Hotel({ ticket }) {
   const token = useToken();
   const { hotels, loadingHotels } = useHotel();
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [roomId, setRoomId] = useState(null);
   const [hotelId, setHotelId] = useState(null);
   const [rooms, setRooms] = useState([]);
-  const [color, setColor] = useState(null);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [showHosting, setShowHosting] = useState(false);
-  const [text, setText] = useState('');
   const [showButton, setShowButton] = useState(false);
+  const [selectedStyle, setSelectedStyle] = useState(null);
+  const [capacity, setCapacity] = useState(0);
 
   async function listRooms(id) {
     const data = await getRooms(id, token);
@@ -30,7 +29,17 @@ export default function Hotel({ ticket }) {
   }
 
   async function sendBooking() {
-    return;
+    const body = {
+      roomId: selectedRoom,
+    };
+
+    try {
+      await saveBooking(body, token);
+      toast('Quarto reservado com sucesso!');
+      window.location.reload(); /*CONSERTAR*/
+    } catch (e) {
+      toast('Não foi possível realizar a reserva.');
+    }
   }
 
   useEffect(() => {
@@ -62,6 +71,8 @@ export default function Hotel({ ticket }) {
             <nav>
               {hotels?.map((hotel, index) => (
                 <HotelPlaceholder
+                  selectedStyle={selectedStyle}
+                  setSelectedStyle={setSelectedStyle}
                   key={index}
                   hotel={hotel}
                   index={hotel.id}

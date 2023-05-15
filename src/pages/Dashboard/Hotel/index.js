@@ -1,16 +1,19 @@
 import HotelComponent from '../../../components/Hotel';
+import HotelConfirmation from '../../../components/HotelConfirmation';
+import useBooking from '../../../hooks/api/useBooking';
 import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
-//import useHotel from '../../../hooks/api/useHotel';
 
 export default function Hotel() {
   const { ticket } = useTicket();
   const { token } = useToken();
-  //const { hotels, loadingHotels } = useHotel();
+  const { bookings } = useBooking();
 
   return (
     <>
-      <HotelComponent ticket={ticket} token={token} />
+      {!bookings ? <HotelComponent ticket={ticket} token={token} />
+        : <HotelConfirmation ticket={ticket} token={token} />}
+
     </>
   );
 }

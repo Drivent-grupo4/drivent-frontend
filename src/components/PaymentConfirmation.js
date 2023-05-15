@@ -4,7 +4,7 @@ import OK from '../assets/images/confirmed.png';
 export function PaymentConfirmation() {
   return (
     <ConfirmationBox>
-      <img src={OK} alt='confirmation-image' />
+      <img src={OK} alt='confirmation' />
       <div>
         <h1>Pagamento confirmado!</h1>
         <h2>Prossiga para escolha de hospedagem e atividades</h2>

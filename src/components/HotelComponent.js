@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
+import useCapacity from '../hooks/api/useCapacity';
 
 function getInfo(rooms) {
   let accomodations = [];
@@ -22,16 +23,21 @@ function getInfo(rooms) {
   return info;
 }
 
-function getCapacity(rooms) {
+function getCapacity(hotelId, rooms) {
+  const { bookings } = useCapacity(hotelId);
+
   let total = 0;
-  for (let item of rooms) {
-    total += item.capacity;
+  let occupancy = 0;
+  if (bookings) {
+    for (let item of bookings) {
+      total += item.capacity;
+      occupancy += item._count.Booking;
+    }
   }
-  return total;
+  return total - occupancy;
 }
 
-export default function HotelPlaceholder({ setHotelId, setShowHosting, listRooms, hotelId, hotel, index }) {
-  const [selectedStyle, setSelectedStyle] = useState(null);
+export default function HotelPlaceholder({ setHotelId, setSelectedStyle, selectedStyle, setShowHosting, listRooms, hotelId, hotel, index }) {
   const rooms = hotel.Rooms;
 
   let info = '';
@@ -39,15 +45,16 @@ export default function HotelPlaceholder({ setHotelId, setShowHosting, listRooms
 
   if (rooms) {
     info = getInfo(rooms);
-    capacity = getCapacity(rooms);
+    capacity = getCapacity(hotelId, rooms);
   }
 
   return (
     <>
       <HotelContainer
-        selectedStyle={selectedStyle === hotelId}
+        selectedStyle={selectedStyle}
+        index={index}
         onClick={() => {
-          setSelectedStyle(hotel.id);
+          setSelectedStyle(index);
           setHotelId(hotelId);
           setShowHosting(true);
           listRooms(hotelId);
@@ -67,7 +74,7 @@ export default function HotelPlaceholder({ setHotelId, setShowHosting, listRooms
 const HotelContainer = styled.div`
   width: 196px;
   height: 264px;
-  background: ${({ selectedStyle }) => selectedStyle ? '#ffeed2' : '#ebebeb'};
+  background: ${({ selectedStyle, index }) => selectedStyle === index ? '#ffeed2' : '#ebebeb'};
   border-radius: 10px;
   h4 {
     font-family: 'Roboto', sans-serif;
