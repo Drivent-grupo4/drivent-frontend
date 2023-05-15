@@ -17,7 +17,6 @@ export default function PaymentComponent({ ticket }) {
   const [cvv, setCvv] = useState('');
   const [payed, setPayed] = useState(false);
   const token = useToken();
-  console.log('PAY', ticket);
   
   useEffect(() => {
     setPayed(ticket.status === 'PAID');
