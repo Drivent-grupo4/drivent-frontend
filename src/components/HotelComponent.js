@@ -1,8 +1,5 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import useToken from '../hooks/useToken';
-import { getRooms } from '../services/roomApi';
-import useRooms from '../hooks/api/useRoom';
 
 function getInfo(rooms) {
   let accomodations = [];
@@ -25,31 +22,32 @@ function getInfo(rooms) {
   return info;
 }
 
-async function listRooms(id) {
-  const token = useToken();
-  const data = await getRooms(id, token);
-  const rooms = data.Rooms;
-
-  return rooms;
+function getCapacity(rooms) {
+  let total = 0;
+  for (let item of rooms) {
+    total += item.capacity;
+  }
+  return total;
 }
 
-export default function HotelPlaceholder({ setHotelId, setShowHosting, hotelId, hotel, index }) {
+export default function HotelPlaceholder({ setHotelId, setShowHosting, listRooms, hotelId, hotel, index }) {
   const [selectedStyle, setSelectedStyle] = useState(null);
-  const rooms = listRooms(hotelId);
-  console.log(rooms);
+  const rooms = hotel.Rooms;
 
   let info = '';
+  let capacity = 0;
 
   if (rooms) {
     info = getInfo(rooms);
+    capacity = getCapacity(rooms);
   }
 
   return (
     <>
       <HotelContainer
-        selectedStyle={selectedStyle === index}
+        selectedStyle={selectedStyle === hotelId}
         onClick={() => {
-          setSelectedStyle(index);
+          setSelectedStyle(hotel.id);
           setHotelId(hotelId);
           setShowHosting(true);
           listRooms(hotelId);
@@ -58,9 +56,9 @@ export default function HotelPlaceholder({ setHotelId, setShowHosting, hotelId, 
         <HotelThumb src={hotel.image} alt="new" />
         <h4>{hotel.name}</h4>
         <h3>Tipo de acomodações:</h3>
-        <p>{}</p>
+        <p>{info}</p>
         <h3>Vagas disponiveis:</h3>
-        {/* <p>{getAvailability(hotel.id)}</p> */}
+        <p>{capacity}</p>
       </HotelContainer>
     </>
   );
@@ -86,9 +84,10 @@ const HotelContainer = styled.div`
   }
   p {
     margin-left: 15px;
-    margin-top: 2px;
+    margin-top: 5px;
     width: 118px;
-    font-family: 'Roboto';
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400px;
     font-size: 12px;
     color: #3C3C3C;
   }
