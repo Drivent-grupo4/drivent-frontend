@@ -1,62 +1,113 @@
 import styled from 'styled-components';
-import { useState, useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { getHotels } from '../services/hotelApi';
 import useToken from '../hooks/useToken';
+import useHotel from '../hooks/api/useHotel';
+import { getAccommodationTypes, getAvailability } from './acomodations';
 
 export default function Hotel({ ticket }) {
   const token = useToken();
-  async function listHotels() {
-    const data = await getHotels(token);
+  const { hotels, loadingHotels } = useHotel();
 
-    return data;
-  }
+  // async function listHotels() {
+  //   const data = await getHotels(token);
 
-  useEffect(() => {
-    listHotels();
-  }, []);
+  //   return data;
+  // }
+
+  // useEffect(() => {
+  //   listHotels();
+  // }, []);
+
+  //   return ticket ? (
+  //     ticket?.status === 'PAID' ? (
+  //       ticket?.TicketType?.includesHotel === false ? (
+  //         <WarningMessage>
+  //           Sua modalidade de ingresso não inclui hospedagem prossiga para a escolha de atividades
+  //         </WarningMessage>
+  //       ) : (
+  //         <Main>
+  //           <div className="title"> Escolha de hotel e quarto </div>
+  //           <Modality>
+  //             <h2>Primeiro, escolha seu hotel</h2>
+  //             <nav>
+  //               {hotels?.map((hotel) => {
+  //                 <>
+  //                   <HotelContainer>
+  //                     <HotelThumb src={hotel.image} alt="new" />
+  //                     <h4>{hotel.name}</h4>
+  //                   </HotelContainer>
+  //                 </>;
+  //               })}
+  //             </nav>
+  //           </Modality>
+  //         </Main>
+  //       )
+  //     ) : (
+  //       <WarningMessage>Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem</WarningMessage>
+  //     )
+  //   ) : (
+  //     <WarningMessage>Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem</WarningMessage>
+  //   );
+  // }
 
   return (
-    ticket ?
-      (ticket.status === 'PAID' ?
-        (
-          (ticket.TicketType.includesHotel === false) ?
-            <WarningMessage>
-              Sua modalidade de ingresso não inclui hospedagem prossiga para a escolha de atividades
-            </WarningMessage>
-            :
-            <Main>
-              <div className="title"> Escolha de hotel e quarto </div>
-              <Modality>
-                <h2>Primeiro, escolha seu hotel</h2>
-                <nav>
-                  <HotelContainer>
-                    <HotelThumb src="https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350"
-                      alt="new" />
-                    <h4>Driven Resort</h4>
-                  </HotelContainer>
-                </nav>
-              </Modality>
-            </Main>
-        )
-        :
-        <WarningMessage>
-          Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem
-        </WarningMessage>
-      ) :
-      <WarningMessage>
-        Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem
-      </WarningMessage>);
-};
+    <>
+      {ticket?.status !== 'PAID' && (
+        <WarningMessage>Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem</WarningMessage>
+      )}
 
+      {ticket?.status === 'PAID' && !ticket?.TicketType.includesHotel && (
+        <WarningMessage>
+          Sua modalidade de ingresso não inclui hospedagem prossiga para a escolha de atividades
+        </WarningMessage>
+      )}
+
+      {ticket?.status === 'PAID' && ticket?.TicketType?.includesHotel && !hotels && !loadingHotels && (
+        <WarningMessage>Não foi possivel encontrar hoteis disponiveis</WarningMessage>
+      )}
+
+      {ticket?.status === 'PAID' && ticket?.TicketType?.includesHotel && hotels && (
+        <Main>
+          {' '}
+          <div className="title"> Escolha de hotel e quarto </div>
+          <Modality>
+            <h2>Primeiro, escolha seu hotel</h2>
+            <nav>
+              {hotels?.map((hotel, index) => (
+                <>
+                  <HotelContainer key={index}>
+                    <HotelThumb src={hotel.image} alt="new" />
+                    <h4>{hotel.name}</h4>
+                    <h3>Tipo de acomodações:</h3>
+                    {/* <p>{getAccommodationTypes(hotel.id)}</p> */}
+                    <h3>Vagas disponiveis:</h3>
+                    {/* <p>{getAvailability(hotel.id)}</p> */}
+                  </HotelContainer>
+                </>
+              ))}
+            </nav>
+          </Modality>
+        </Main>
+      )}
+    </>
+  );
+}
 const HotelContainer = styled.div`
   width: 196px;
   height: 264px;
-  background: #EBEBEB;
+  background: #ebebeb;
   border-radius: 10px;
   h4 {
     font-family: 'Roboto', sans-serif;
     font-size: 20px;
     color: #343434;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 700px;
     margin-left: 15px;
     margin-top: 10px;
   }
@@ -71,14 +122,14 @@ const HotelThumb = styled.img`
 `;
 
 const WarningMessage = styled.div`
-    width: 420px;
-    height: 46px;
-    font-family: 'Roboto';
-    font-size: 20px;
-    text-align: center;
-    color: #8E8E8E;
-    margin-top: 317px;
-    margin-left: 256px;
+  width: 420px;
+  height: 46px;
+  font-family: 'Roboto';
+  font-size: 20px;
+  text-align: center;
+  color: #8e8e8e;
+  margin-top: 317px;
+  margin-left: 256px;
 `;
 
 const Main = styled.main`
