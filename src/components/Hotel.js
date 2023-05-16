@@ -19,18 +19,20 @@ export default function Hotel({ ticket }) {
   const [showHosting, setShowHosting] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState(null);
+  const [booking, setBooking] = useState(null);
   const [capacity, setCapacity] = useState(0);
 
   async function listRooms(id) {
-    const data = await getRooms(id, token);
-    setRooms(data.Rooms);
+    const bookings = await getBookings(id, token);
+
+    setRooms(bookings);
 
     return rooms;
   }
 
   async function sendBooking() {
     const body = {
-      roomId: selectedRoom,
+      roomId: booking,
     };
 
     try {
@@ -92,8 +94,14 @@ export default function Hotel({ ticket }) {
                       <RoomContainer
                         key={room.id}
                         selectedRoom={selectedRoom === index}
+                        background={room._count.Booking === room.capacity ? '#E9E9E9' : '#FFFFFF'}
+                        style={room._count.Booking === room.capacity ? { pointerEvents: 'none' } : {}}
                       >
-                        <RoomNumber>{room.name}</RoomNumber>
+                        <RoomNumber
+                          style={room._count.Booking === room.capacity ? { color: '#9D9D9D' } : {}}
+                        >
+                          {room.name}
+                        </RoomNumber>
                         <IconContainer>
                           {[...Array(room.capacity).keys()].map((key) => (
                             selectedIcon === key && selectedRoom === index ?
@@ -113,6 +121,7 @@ export default function Hotel({ ticket }) {
                                 width="27px"
                                 onClick={() => {
                                   setSelectedRoom(index);
+                                  setBooking(room.id);
                                   setSelectedIcon(key);
                                   setShowButton(true);
                                 }}
@@ -184,7 +193,7 @@ const RoomContainer = styled.div`
   border-radius: 10px;
   border-color: #CECECE;
   margin-bottom: 8px;
-  background: ${({ selectedRoom }) => selectedRoom ? '#ffeed2' : '#FFFFFF'};
+  background: ${props => props.background};
   display: flex;
   justify-content: space-between;
 `;
