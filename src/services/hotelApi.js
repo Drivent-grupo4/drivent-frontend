@@ -8,3 +8,12 @@ export async function getHotels(token) {
   });
   return data;
 }
+
+export async function getHotelById(id, token) {
+  const { data } = await api.get(`/hotels/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
+}
