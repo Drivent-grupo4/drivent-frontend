@@ -1,6 +1,25 @@
 import styled from 'styled-components';
+import { getUserBooking } from '../services/bookingApi';
+import useToken from '../hooks/useToken';
+import { getHotelById } from '../services/hotelApi';
+import { toast } from 'react-toastify';
+import { useState, useEffect } from 'react';
 
 export default function HotelConfirmation() {
+  const [room, setRoom] = useState('');
+  const [hotel, setHotel] = useState('');
+  const token = useToken();
+  useEffect(async() => {
+    try {
+      const roomInfo = await getUserBooking(token);
+      setRoom(roomInfo.Room);
+      const hotelInfo = await getHotelById(roomInfo.Room.hotelId, token);
+      setHotel(hotelInfo);
+    } catch (e) {
+      toast(e);
+    }
+  }, []);
+
   return (
     <Main>
       {' '}
@@ -9,12 +28,12 @@ export default function HotelConfirmation() {
         <h2>Você já escolheu seu quarto:</h2>
         <nav>
           <HotelContainer>
-            <HotelThumb src='https://cdn.britannica.com/25/172925-050-DC7E2298/black-cat-back.jpg' alt="new" />
-            <h4>Driven Resort</h4>
+            <HotelThumb src={hotel.image} alt="hotel_image" />
+            <h4>{hotel.name}</h4>
             <h3>Quarto reservado</h3>
-            <p>101 (double)</p>
+            <p>{room.name} ({room.capacity === 1 && 'single'}{room.capacity === 2 && 'double'}{room.capacity === 3 && 'triple'})</p>
             <h3>Pessoas no seu quarto</h3>
-            <p>Você e mais 1</p>
+            <p>Você {room.capacity === 1 ? '' : `e mais ${room.capacity-1}`}</p>
           </HotelContainer>
         </nav>
       </Modality>
