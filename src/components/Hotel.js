@@ -103,30 +103,44 @@ export default function Hotel({ ticket }) {
                           {room.name}
                         </RoomNumber>
                         <IconContainer>
-                          {[...Array(room.capacity).keys()].map((key) => (
-                            selectedIcon === key && selectedRoom === index ?
-                              <Person
-                                key={key}
-                                color={'#FF4791'}
-                                title={''}
-                                height="27px"
-                                width="27px"
-                              />
-                              :
-                              <PersonOutline
-                                key={key}
-                                color={'#000000'}
-                                title={''}
-                                height="27px"
-                                width="27px"
-                                onClick={() => {
-                                  setSelectedRoom(index);
-                                  setBooking(room.id);
-                                  setSelectedIcon(key);
-                                  setShowButton(true);
-                                }}
-                              />
-                          ))}
+                          {[...Array(room.capacity - room._count.Booking).keys()].map((key) => 
+                            (
+                              selectedIcon === key && selectedRoom === index ?
+                                <Person
+                                  key={key}
+                                  color={'#FF4791'}
+                                  title={''}
+                                  height="27px"
+                                  width="27px"
+                                />
+                                :
+                                <PersonOutline
+                                  key={key}
+                                  color={'#000000'}
+                                  title={''}
+                                  height="27px"
+                                  width="27px"
+                                  onClick={() => {
+                                    setSelectedRoom(index);
+                                    setBooking(room.id);
+                                    setSelectedIcon(key);
+                                    setShowButton(true);
+                                  }}
+                                /> 
+                            )
+                          )}
+                          {[...Array(room._count.Booking).keys()].map((key) => 
+                            (
+                              room._count.Booking !== 0 &&
+                                <Person
+                                  key={key}
+                                  color={'#000000'}
+                                  title={''}
+                                  height="27px"
+                                  width="27px"
+                                />
+                            )
+                          )}
                         </IconContainer>
                       </RoomContainer>
                     ))}
