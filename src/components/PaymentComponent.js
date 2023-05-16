@@ -68,7 +68,7 @@ export default function PaymentComponent({ ticket }) {
         <nav>
           <div>
             <h3>
-              {ticket.TicketType.name} + {withHotel ? 'Com Hotel' : 'Sem Hotel'}
+              {ticket.TicketType.name} + {withHotel || ticket.TicketType.includesHotel ? 'Com Hotel' : 'Sem Hotel'}
             </h3>
             <p>R$ {ticketPrice === 0 ? ticket.TicketType.price : ticketPrice}</p>
           </div>
