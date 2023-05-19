@@ -41,7 +41,7 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
         toast('Quarto reservado com sucesso!');
         setChange(false);
         //setConfirmation(!confirmation);
-        //window.location.reload(); /*CONSERTAR*/
+        window.location.reload(); /*CONSERTAR*/
       } catch (e) {
         toast('Não foi possível realizar a reserva.');
       }
@@ -51,7 +51,7 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
         await saveBooking(body, token);
         toast('Quarto reservado com sucesso!');
         //setConfirmation(!confirmation);
-        //window.location.reload(); /*CONSERTAR*/
+        window.location.reload(); /*CONSERTAR*/
       } catch (e) {
         toast('Não foi possível realizar a reserva.');
       }
