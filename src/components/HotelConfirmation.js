@@ -5,10 +5,11 @@ import { getHotelById } from '../services/hotelApi';
 import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 
-export default function HotelConfirmation() {
+export default function HotelConfirmation({ setConfirmation, confirmation, setChange }) {
   const [room, setRoom] = useState('');
   const [hotel, setHotel] = useState('');
   const token = useToken();
+
   useEffect(async() => {
     try {
       const roomInfo = await getUserBooking(token);
@@ -31,14 +32,26 @@ export default function HotelConfirmation() {
             <HotelThumb src={hotel.image} alt="hotel_image" />
             <h4>{hotel.name}</h4>
             <h3>Quarto reservado</h3>
-            <p>{room.name} ({room.capacity === 1 && 'single'}{room.capacity === 2 && 'double'}{room.capacity === 3 && 'triple'})</p>
+            <p>
+              {room.name} ({room.capacity === 1 && 'single'}
+              {room.capacity === 2 && 'double'}
+              {room.capacity === 3 && 'triple'})
+            </p>
             <h3>Pessoas no seu quarto</h3>
-            <p>Você {room.capacity === 1 ? '' : `e mais ${room.capacity-1}`}</p>
+            <p>Você {room.capacity === 1 ? '' : `e mais ${room.capacity - 1}`}</p>
           </HotelContainer>
         </nav>
       </Modality>
       <CloseTicket>
-        <button>TROCAR DE QUARTO</button>
+        <button
+          onClick={() => {
+            setConfirmation(false);
+            console.log(confirmation);
+            setChange(true);
+          }}
+        >
+          TROCAR DE QUARTO
+        </button>
       </CloseTicket>
     </Main>
   );
@@ -142,7 +155,7 @@ const Modality = styled.aside`
 const HotelContainer = styled.div`
   width: 196px;
   height: 264px;
-  background: #FFEED2;
+  background: #ffeed2;
   border-radius: 10px;
   h4 {
     font-family: 'Roboto', sans-serif;
@@ -164,7 +177,7 @@ const HotelContainer = styled.div`
     font-family: 'Roboto', sans-serif;
     font-weight: 400px;
     font-size: 12px;
-    color: #3C3C3C;
+    color: #3c3c3c;
   }
 `;
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import HotelComponent from '../../../components/Hotel';
 import HotelConfirmation from '../../../components/HotelConfirmation';
 import useBooking from '../../../hooks/api/useBooking';
@@ -7,13 +8,28 @@ import useToken from '../../../hooks/useToken';
 export default function Hotel() {
   const { ticket } = useTicket();
   const { token } = useToken();
-  const { bookings } = useBooking();
-
+  const [confirmation, setConfirmation] = useState(false);
+  const [change, setChange] = useState(false);
+  
   return (
     <>
-      {!bookings ? <HotelComponent ticket={ticket} token={token} />
-        : <HotelConfirmation ticket={ticket} token={token} />}
-
+      {!confirmation ? (
+        <HotelComponent
+          ticket={ticket}
+          token={token}
+          setConfirmation={setConfirmation}
+          change={change}
+          setChange={setChange}         
+        />
+      ) : (
+        <HotelConfirmation
+          ticket={ticket}
+          token={token}
+          confirmation={confirmation}
+          setConfirmation={setConfirmation}      
+          setChange={setChange} 
+        />
+      )}
     </>
   );
 }
