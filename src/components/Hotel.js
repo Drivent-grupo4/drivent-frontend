@@ -5,11 +5,10 @@ import useHotel from '../hooks/api/useHotel';
 import { getRooms } from '../services/roomApi';
 import { PersonOutline, Person } from 'react-ionicons';
 import HotelPlaceholder from './HotelComponent';
-import { getBookings, saveBooking } from '../services/bookingApi';
+import { getBookings, getUserBooking, saveBooking, updateBooking } from '../services/bookingApi';
 import { toast } from 'react-toastify';
-import useCapacity from '../hooks/api/useCapacity';
 
-export default function Hotel({ ticket }) {
+export default function Hotel({ ticket, confirmation, setConfirmation, change, setChange }) {
   const token = useToken();
   const { hotels, loadingHotels } = useHotel();
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -20,13 +19,12 @@ export default function Hotel({ ticket }) {
   const [showButton, setShowButton] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [booking, setBooking] = useState(null);
-  const [capacity, setCapacity] = useState(0);
-
+  
   async function listRooms(id) {
     const bookings = await getBookings(id, token);
 
     setRooms(bookings);
-
+    
     return rooms;
   }
 
@@ -35,12 +33,28 @@ export default function Hotel({ ticket }) {
       roomId: booking,
     };
 
-    try {
-      await saveBooking(body, token);
-      toast('Quarto reservado com sucesso!');
-      window.location.reload(); /*CONSERTAR*/
-    } catch (e) {
-      toast('Não foi possível realizar a reserva.');
+    if(change) {
+      try {
+        const roomInfo = await getUserBooking(token);
+        console.log('2:  ', roomInfo);
+        await updateBooking(body, roomInfo.id, token);
+        toast('Quarto reservado com sucesso!');
+        setChange(false);
+        //setConfirmation(!confirmation);
+        //window.location.reload(); /*CONSERTAR*/
+      } catch (e) {
+        toast('Não foi possível realizar a reserva.');
+      }
+    }else{
+      try {
+        console.log('1');
+        await saveBooking(body, token);
+        toast('Quarto reservado com sucesso!');
+        //setConfirmation(!confirmation);
+        //window.location.reload(); /*CONSERTAR*/
+      } catch (e) {
+        toast('Não foi possível realizar a reserva.');
+      }
     }
   }
 
@@ -85,7 +99,7 @@ export default function Hotel({ ticket }) {
                 />
               ))}
             </nav>
-            {showHosting ?
+            {showHosting ? (
               <Modality>
                 <h2>Ótima pedida! Agora escolha seu quarto:</h2>
                 <nav>
@@ -97,49 +111,34 @@ export default function Hotel({ ticket }) {
                         background={room._count.Booking === room.capacity ? '#E9E9E9' : '#FFFFFF'}
                         style={room._count.Booking === room.capacity ? { pointerEvents: 'none' } : {}}
                       >
-                        <RoomNumber
-                          style={room._count.Booking === room.capacity ? { color: '#9D9D9D' } : {}}
-                        >
+                        <RoomNumber style={room._count.Booking === room.capacity ? { color: '#9D9D9D' } : {}}>
                           {room.name}
                         </RoomNumber>
                         <IconContainer>
-                          {[...Array(room.capacity - room._count.Booking).keys()].map((key) => 
-                            (
-                              selectedIcon === key && selectedRoom === index ?
-                                <Person
-                                  key={key}
-                                  color={'#FF4791'}
-                                  title={''}
-                                  height="27px"
-                                  width="27px"
-                                />
-                                :
-                                <PersonOutline
-                                  key={key}
-                                  color={'#000000'}
-                                  title={''}
-                                  height="27px"
-                                  width="27px"
-                                  onClick={() => {
-                                    setSelectedRoom(index);
-                                    setBooking(room.id);
-                                    setSelectedIcon(key);
-                                    setShowButton(true);
-                                  }}
-                                /> 
+                          {[...Array(room.capacity - room._count.Booking).keys()].map((key) =>
+                            selectedIcon === key && selectedRoom === index ? (
+                              <Person key={key} color={'#FF4791'} title={''} height="27px" width="27px" />
+                            ) : (
+                              <PersonOutline
+                                key={key}
+                                color={'#000000'}
+                                title={''}
+                                height="27px"
+                                width="27px"
+                                onClick={() => {
+                                  setSelectedRoom(index);
+                                  setBooking(room.id);
+                                  setSelectedIcon(key);
+                                  setShowButton(true);
+                                }}
+                              />
                             )
                           )}
-                          {[...Array(room._count.Booking).keys()].map((key) => 
-                            (
-                              room._count.Booking !== 0 &&
-                                <Person
-                                  key={key}
-                                  color={'#000000'}
-                                  title={''}
-                                  height="27px"
-                                  width="27px"
-                                />
-                            )
+                          {[...Array(room._count.Booking).keys()].map(
+                            (key) =>
+                              room._count.Booking !== 0 && (
+                                <Person key={key} color={'#000000'} title={''} height="27px" width="27px" />
+                              )
                           )}
                         </IconContainer>
                       </RoomContainer>
@@ -147,14 +146,23 @@ export default function Hotel({ ticket }) {
                   </MainRooms>
                 </nav>
               </Modality>
-              : <></>}
+            ) : (
+              <></>
+            )}
           </Modality>
-          {
-            showButton &&
+          {showButton && (
             <CloseTicket>
-              <button onClick={() => sendBooking()}>RESERVAR QUARTO</button>
+              <button
+                onClick={() => {
+                  sendBooking();
+                  setConfirmation(true);
+                  console.log(confirmation);
+                }}
+              >
+                RESERVAR QUARTO
+              </button>
             </CloseTicket>
-          }
+          )}
         </Main>
       )}
     </>
@@ -205,9 +213,9 @@ const RoomContainer = styled.div`
   height: 45px;
   border: 1px solid;
   border-radius: 10px;
-  border-color: #CECECE;
+  border-color: #cecece;
   margin-bottom: 8px;
-  background: ${props => props.background};
+  background: ${(props) => props.background};
   display: flex;
   justify-content: space-between;
 `;
