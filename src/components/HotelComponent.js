@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { useState } from 'react';
 import useCapacity from '../hooks/api/useCapacity';
 
 function getInfo(rooms) {
@@ -37,7 +36,7 @@ function getCapacity(hotelId, rooms) {
   return total - occupancy;
 }
 
-export default function HotelPlaceholder({ setHotelId, setSelectedStyle, selectedStyle, setShowHosting, listRooms, hotelId, hotel, index }) {
+export default function HotelPlaceholder({ setSelectedRoom, setHotelName, setHotelId, setSelectedStyle, selectedStyle, setShowHosting, listRooms, hotelId, hotel, index }) {
   const rooms = hotel.Rooms;
 
   let info = '';
@@ -58,6 +57,8 @@ export default function HotelPlaceholder({ setHotelId, setSelectedStyle, selecte
           setHotelId(hotelId);
           setShowHosting(true);
           listRooms(hotelId);
+          setSelectedRoom(null);
+          setHotelName(hotel);
         }}
       >
         <HotelThumb src={hotel.image} alt="new" />

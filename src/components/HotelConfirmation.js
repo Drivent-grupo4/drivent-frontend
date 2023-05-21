@@ -1,25 +1,23 @@
 import styled from 'styled-components';
-import { getUserBooking } from '../services/bookingApi';
+import { useEffect, useState } from 'react';
+import { getBookings, getUserBooking } from '../services/bookingApi';
 import useToken from '../hooks/useToken';
-import { getHotelById } from '../services/hotelApi';
 import { toast } from 'react-toastify';
-import { useState, useEffect } from 'react';
 
-export default function HotelConfirmation({ setConfirmation, confirmation, setChange }) {
-  const [room, setRoom] = useState('');
-  const [hotel, setHotel] = useState('');
+export default function HotelConfirmation({ setConfirmation, change, setChange, room, hotelName, setHotelName, setRoom }) {
   const token = useToken();
+  const [capacity, setCapacity] = useState(null);
 
-  useEffect(async() => {
+  useEffect(async() => {    
     try {
       const roomInfo = await getUserBooking(token);
-      setRoom(roomInfo.Room);
-      const hotelInfo = await getHotelById(roomInfo.Room.hotelId, token);
-      setHotel(hotelInfo);
+      setHotelName(roomInfo.Room.Hotel);
+      const info = await getBookings(hotelName.id, token);
+      setCapacity(info[roomInfo.Room.id - 1].Booking.length);
     } catch (e) {
       toast(e);
     }
-  }, []);
+  }, [change, hotelName]);
 
   return (
     <Main>
@@ -29,8 +27,8 @@ export default function HotelConfirmation({ setConfirmation, confirmation, setCh
         <h2>Você já escolheu seu quarto:</h2>
         <nav>
           <HotelContainer>
-            <HotelThumb src={hotel.image} alt="hotel_image" />
-            <h4>{hotel.name}</h4>
+            <HotelThumb src={hotelName.image} alt="hotel_image" />
+            <h4>{hotelName.name}</h4>
             <h3>Quarto reservado</h3>
             <p>
               {room.name} ({room.capacity === 1 && 'single'}
@@ -46,8 +44,7 @@ export default function HotelConfirmation({ setConfirmation, confirmation, setCh
         <button
           onClick={() => {
             setConfirmation(false);
-            console.log(confirmation);
-            setChange(true);
+            setChange(!change);
           }}
         >
           TROCAR DE QUARTO

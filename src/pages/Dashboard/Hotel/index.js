@@ -5,38 +5,44 @@ import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
 import { useEffect } from 'react';
 import useBookings from '../../../hooks/api/useBooking';
-import { getUserBooking } from '../../../services/bookingApi';
-import { toast } from 'react-toastify';
 
 export default function Hotel() {
   const { ticket } = useTicket();
   const { token } = useToken();
   const [confirmation, setConfirmation] = useState(true);
   const [change, setChange] = useState(false);
+  const [room, setRoom] = useState('');
+  const [hotelName, setHotelName] = useState('');
+  const [userBooking, setUserBooking] = useState('');
   const { bookings } = useBookings();
-
+  
   useEffect(async() => {
-    try {
-      const booking = await getUserBooking(token);
-      if (booking) {
-        setConfirmation(true);
-      } else {
-        setConfirmation(false);
-      }
-    } catch (e) {
-      toast('Nenhuma reserva foi encontrada.');
+    if (bookings) {
+      setConfirmation(true);
+      setChange(!change);
+      setRoom(bookings.Room);
+      setUserBooking(bookings.id);
+      setHotelName(bookings.Room.Hotel);
+    } else {
+      setConfirmation(false);
     }
-  }, []);
+  }, [bookings, userBooking]);
 
   return (
     <>
-      {!bookings || !confirmation ? (
+      {!confirmation ? (
         <HotelComponent
           ticket={ticket}
           token={token}
           setConfirmation={setConfirmation}
           change={change}
           setChange={setChange}
+          room={room}
+          setRoom={setRoom}
+          setHotelName={setHotelName}
+          hotelName={hotelName}
+          userBooking={userBooking}
+          setUserBooking={setUserBooking}
         />
       ) : (
         <HotelConfirmation
@@ -45,6 +51,11 @@ export default function Hotel() {
           confirmation={confirmation}
           setConfirmation={setConfirmation}
           setChange={setChange}
+          change={change}
+          room={room}
+          setRoom={setRoom}
+          setHotelName={setHotelName}
+          hotelName={hotelName}
         />
       )}
     </>
