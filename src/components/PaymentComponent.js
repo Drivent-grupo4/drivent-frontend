@@ -1,13 +1,13 @@
 import styled from 'styled-components';
-import Card from '../assets/images/card-image.png';
-import { useState } from 'react';
 import { useContext } from 'react';
 import TicketContext from '../contexts/TicketContext';
 import { postPayment } from '../services/paymentApi';
 import useToken from '../hooks/useToken';
 import { PaymentConfirmation } from './PaymentConfirmation';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import Cards from 'react-credit-cards-2';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
 export default function PaymentComponent({ ticket }) {
   const { ticketPrice, withHotel } = useContext(TicketContext);
@@ -16,6 +16,7 @@ export default function PaymentComponent({ ticket }) {
   const [validThru, setValidThru] = useState('');
   const [cvv, setCvv] = useState('');
   const [payed, setPayed] = useState(false);
+  const [focus, setFocus] = useState('');
   const token = useToken();
   
   useEffect(() => {
@@ -36,7 +37,8 @@ export default function PaymentComponent({ ticket }) {
     if (amexRegex.test(cardNumber)) issuer = 'American Express';
     if (discoverRegex.test(cardNumber)) issuer = 'Discover';
 
-    const [month, year] = validThru.split('/');
+    const month = validThru[0]+validThru[1];
+    const year = validThru[2]+validThru[3];
     const adjustedYear = `20${year}`;
     const expirationDate = new Date(adjustedYear, month, 1);
 
@@ -60,6 +62,10 @@ export default function PaymentComponent({ ticket }) {
     }
   }
 
+  function handleInputFocus(e) {
+    setFocus(e.target.name);
+  }
+
   return (
     <Main>
       <h4> Ingresso e pagamento </h4>
@@ -76,19 +82,67 @@ export default function PaymentComponent({ ticket }) {
 
         <h2>Pagamento</h2>
         {!payed && <CardInfo>
-          <img src={Card} alt='' />
+          
+          <Cards
+            number={cardNumber}
+            expiry={validThru}
+            cvc={cvv}
+            name={name}
+            focused={focus}
+          />
           <div>
             <form onSubmit={pay}>
               <Inputs>
 
-                <NormalInputs onChange={(e) => setCardNumber(Number(e.target.value))} value={cardNumber} type='text' placeholder='Card Number' maxLength={16} pattern='\d*' inputMode='numeric' required></NormalInputs>
+                <NormalInputs 
+                  onChange={(e) => setCardNumber(Number(e.target.value))} 
+                  name='number' 
+                  onFocus={handleInputFocus} 
+                  value={cardNumber} 
+                  type='text' 
+                  placeholder='Card Number' 
+                  maxLength={16} 
+                  pattern='\d*' 
+                  inputMode='numeric' 
+                  required>
+                </NormalInputs>
                 <label>E.g.: 49..., 51..., 36..., 37...</label>
-                <NormalInputs onChange={(e) => setName(e.target.value)} value={name} type='text' placeholder='Name' required></NormalInputs>
+                <NormalInputs 
+                  onChange={(e) => setName(e.target.value)} 
+                  name='name' 
+                  onFocus={handleInputFocus} 
+                  value={name} 
+                  type='text' 
+                  placeholder='Name' 
+                  required>
+                </NormalInputs>
 
                 <div>
 
-                  <ValidInput onChange={(e) => setValidThru(e.target.value)} value={validThru} type='text' placeholder='Valid Thru' maxLength={5} pattern='\d{2}/\d{2}' required></ValidInput>
-                  <CvvInput onChange={(e) => setCvv(Number(e.target.value))} value={cvv} type='text' placeholder='CVV' maxLength={3} pattern='\d*' inputMode='numeric' required></CvvInput>
+                  <ValidInput 
+                    onChange={(e) => setValidThru(e.target.value)} 
+                    name='expiry' 
+                    onFocus={handleInputFocus} 
+                    value={validThru} 
+                    type='text' 
+                    placeholder='Valid Thru' 
+                    maxLength={4} 
+                    pattern='\d*' 
+                    inputMode='numeric' 
+                    required>
+                  </ValidInput>
+                  <CvvInput 
+                    onChange={(e) => setCvv(Number(e.target.value))} 
+                    name='cvc' 
+                    onFocus={handleInputFocus} 
+                    value={cvv} 
+                    type='text' 
+                    placeholder='CVC' 
+                    maxLength={3} 
+                    pattern='\d*' 
+                    inputMode='numeric' 
+                    required>
+                  </CvvInput>
 
                 </div>
                 <button type='submit'><h1>FINALIZAR PAGAMENTO</h1></button>
@@ -171,11 +225,12 @@ const Modality = styled.aside`
 `;
 const CardInfo = styled.div`
 width: 100%;
+height: 200px;
 display: flex;
 
-img {
-  width: 360px;
-  height: 230px;
+div{
+  margin: 0 0 0 0;
+  box-sizing: border-box;
 }
 `;
 const Inputs = styled.div`
@@ -188,7 +243,7 @@ label{
 
 }
 input{
-  margin: 10px 10px;
+  margin: 0 10px 10px 10px;
   height: 50px;
   border: 2px solid #E0E0E0;
   border-radius: 8px;
@@ -210,7 +265,7 @@ border-radius: 4px;
 box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
 width: 182px;
 height: 37px;
-margin: 20px -360px;
+margin: 20px -290px;
 }
 
 div{
