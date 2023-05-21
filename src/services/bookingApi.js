@@ -28,13 +28,3 @@ export async function saveBooking(body, token) {
 
   return data;
 }
-
-export async function updateBooking(body, bookingId, token) {
-  const { data } = await api.put(`/booking/${bookingId}`, body, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return data;
-}

@@ -2,13 +2,12 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import useToken from '../hooks/useToken';
 import useHotel from '../hooks/api/useHotel';
-import { getRooms } from '../services/roomApi';
 import { PersonOutline, Person } from 'react-ionicons';
 import HotelPlaceholder from './HotelComponent';
-import { getBookings, getUserBooking, saveBooking, updateBooking } from '../services/bookingApi';
+import { getBookings, saveBooking } from '../services/bookingApi';
 import { toast } from 'react-toastify';
 
-export default function Hotel({ ticket, confirmation, setConfirmation, change, setChange }) {
+export default function Hotel({ ticket, confirmation, setConfirmation, change, setChange, room, setRoom, setHotelName, hotelName }) {
   const token = useToken();
   const { hotels, loadingHotels } = useHotel();
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -19,12 +18,12 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
   const [showButton, setShowButton] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [booking, setBooking] = useState(null);
-  
+
   async function listRooms(id) {
     const bookings = await getBookings(id, token);
 
     setRooms(bookings);
-    
+
     return rooms;
   }
 
@@ -33,34 +32,19 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
       roomId: booking,
     };
 
-    if(change) {
-      try {
-        const roomInfo = await getUserBooking(token);
-        console.log('2:  ', roomInfo);
-        await updateBooking(body, roomInfo.id, token);
-        toast('Quarto reservado com sucesso!');
-        setChange(false);
-        //setConfirmation(!confirmation);
-        window.location.reload(); /*CONSERTAR*/
-      } catch (e) {
-        toast('Não foi possível realizar a reserva.');
-      }
-    }else{
-      try {
-        console.log('1');
-        await saveBooking(body, token);
-        toast('Quarto reservado com sucesso!');
-        //setConfirmation(!confirmation);
-        window.location.reload(); /*CONSERTAR*/
-      } catch (e) {
-        toast('Não foi possível realizar a reserva.');
-      }
+    try {
+      await saveBooking(body, token);
+      setConfirmation(true);
+      setChange(!change);
+      toast('Quarto reservado com sucesso!');
+    } catch (e) {
+      toast('Não foi possível realizar a reserva.');
     }
   }
 
   useEffect(() => {
     listRooms(hotelId);
-  }, [hotelId]);
+  }, [hotelId, confirmation]);
 
   return (
     <>
@@ -96,6 +80,11 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
                   setShowHosting={setShowHosting}
                   listRooms={listRooms}
                   setHotelId={setHotelId}
+                  room={room}
+                  setRoom={setRoom}
+                  setHotelName={setHotelName}
+                  hotelName={hotelName}
+                  setSelectedRoom={setSelectedRoom}
                 />
               ))}
             </nav>
@@ -107,8 +96,7 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
                     {rooms.map((room, index) => (
                       <RoomContainer
                         key={room.id}
-                        selectedRoom={selectedRoom === index}
-                        background={room._count.Booking === room.capacity ? '#E9E9E9' : '#FFFFFF'}
+                        background={room._count.Booking === room.capacity ? '#E9E9E9' : (selectedRoom === index ? '#FFEED2' : '#FFFFFF')}
                         style={room._count.Booking === room.capacity ? { pointerEvents: 'none' } : {}}
                       >
                         <RoomNumber style={room._count.Booking === room.capacity ? { color: '#9D9D9D' } : {}}>
@@ -130,6 +118,7 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
                                   setBooking(room.id);
                                   setSelectedIcon(key);
                                   setShowButton(true);
+                                  setRoom(room);
                                 }}
                               />
                             )
@@ -156,7 +145,7 @@ export default function Hotel({ ticket, confirmation, setConfirmation, change, s
                 onClick={() => {
                   sendBooking();
                   setConfirmation(true);
-                  console.log(confirmation);
+                  setChange(!change);
                 }}
               >
                 RESERVAR QUARTO
