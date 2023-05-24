@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useActivitiesDays from '../../../hooks/api/useActivitiesDays';
 import weekday from 'dayjs/plugin/weekday';
+import { ActivitiesList } from '../../../components/ActivitiesList';
 
 dayjs.extend(weekday);
 
@@ -18,6 +19,8 @@ export default function Activities({ enrollment, getTicket }) {
   };
 
   const { activitiesDays } = useActivitiesDays();
+  const [activities, setActivities] = useState(false);
+  const [id, setId] = useState(0);
 
   useEffect(async() => {
     if (activitiesDays) {
@@ -34,9 +37,14 @@ export default function Activities({ enrollment, getTicket }) {
         <h2>Primeiro, filtre pelo dia do evento</h2>
         <nav>
           {
-            activitiesDays?.map(({ date }, index) => (
+            activitiesDays?.map(({ date, id }, index) => (
               <button
                 type='button'
+                onClick={() => {
+                  setActivities(true);
+                  setId(id);
+                  console.log(id);
+                }}
               >
                 <span>
                   {
@@ -52,6 +60,7 @@ export default function Activities({ enrollment, getTicket }) {
             ))
           }
         </nav>
+        {activities && <ActivitiesList id={id} />}
       </Modality>
     </Main>
       
