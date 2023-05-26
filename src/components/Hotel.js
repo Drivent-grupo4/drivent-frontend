@@ -220,7 +220,7 @@ const RoomNumber = styled.div`
   margin-left: 16px;
 `;
 
-const WarningMessage = styled.div`
+export const WarningMessage = styled.div`
   width: 420px;
   height: 46px;
   font-family: 'Roboto';

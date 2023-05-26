@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import useActivitiesDays from '../../../hooks/api/useActivitiesDays';
 import weekday from 'dayjs/plugin/weekday';
 import { ActivitiesList } from '../../../components/ActivitiesList';
+import useTicket from '../../../hooks/api/useTicket';
+import { WarningMessage } from '../../../components/Hotel';
 
 dayjs.extend(weekday);
 
@@ -21,6 +23,8 @@ export default function Activities({ enrollment, getTicket }) {
   const { activitiesDays } = useActivitiesDays();
   const [activities, setActivities] = useState(false);
   const [id, setId] = useState(0);
+  const { ticket } = useTicket();
+  const [styledSelected, setStyledSelected] = useState(null);
 
   useEffect(async() => {
     if (activitiesDays) {
@@ -33,37 +37,42 @@ export default function Activities({ enrollment, getTicket }) {
   return (
     <Main>
       <div className="title"> Escolha de Atividades </div>
-      <Modality>
-        <h2>Primeiro, filtre pelo dia do evento</h2>
-        <nav>
-          {
-            activitiesDays?.map(({ date, id }, index) => (
-              <button
-                type='button'
+
+      {ticket?.status !== 'PAID' && (
+        <WarningMessage>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</WarningMessage>
+      )}
+
+      {ticket?.status === 'PAID' && ticket?.TicketType?.name === 'Online' && (
+        <WarningMessage>
+          Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.
+        </WarningMessage>
+      )}
+
+      {ticket?.status === 'PAID' && ticket?.TicketType?.name === 'Presencial' && (
+        <Modality>
+          <h2>Primeiro, filtre pelo dia do evento</h2>
+          <nav>
+            {activitiesDays?.map(({ date, id }, index) => (
+              <DayButton
+                type="button"
+                index={index}
+                styledSelected={styledSelected}
                 onClick={() => {
                   setActivities(true);
                   setId(id);
+                  setStyledSelected(index);
                   console.log(id);
                 }}
               >
-                <span>
-                  {
-                    dayjs(date).format('DD/MM')
-                  }
-                </span>
-                <span>
-                  {
-                    weekdays[dayjs(date).weekday()]
-                  }
-                </span>
-              </button>
-            ))
-          }
-        </nav>
-        {activities && <ActivitiesList id={id} />}
-      </Modality>
+                <span>{dayjs(date).format('DD/MM')}</span>
+                <span>{weekdays[dayjs(date).weekday()]}</span>
+              </DayButton>
+            ))}
+          </nav>
+          {activities && <ActivitiesList id={id} />}
+        </Modality>
+      )}
     </Main>
-      
   );
 };
 
@@ -100,19 +109,6 @@ const Modality = styled.aside`
     justify-content: flex-start;
     gap: 24px;
 
-    button {
-      display: flex;
-      border: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      flex-wrap: wrap;
-      width: 130px;
-      height: 65px;
-      border-radius: 20px;
-      box-shadow: inset 0px 0px 0px 1px #cecece;
-
       h3 {
         font-family: 'Roboto', sans-serif;
         font-weight: 400;
@@ -133,4 +129,19 @@ const Modality = styled.aside`
       cursor: pointer;
     }
   }
+`;
+
+const DayButton = styled.button`
+  display: flex;
+  border: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+  width: 131px;
+  height: 37px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  background: ${({ styledSelected, index }) => styledSelected === index ? '#FFD37D' : '#E0E0E0'};
 `;
