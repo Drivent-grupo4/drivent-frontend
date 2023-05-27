@@ -39,42 +39,42 @@ export function ActivitiesList({ id }) {
 }
 
 const Container = styled.div`
-width: 864px;
-height: 391px;
-display: flex;
-flex-wrap: nowrap;
-justify-content: space-around;
+  width: 864px;
+  height: 391px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
 `;
 
 const Boxes = styled.div`
-display: block;
-width: 100%;
+  display: block;
+  width: 100%;
 `;
 
 const ActivitiesBox = styled.div`
-height: 391px;
-border: 1px solid #D7D7D7;
-display: block;
-justify-content: space-around;
-margin-bottom: 10px;
+  height: 391px;
+  border: 1px solid #D7D7D7;
+  display: block;
+  justify-content: space-around;
+  margin-bottom: 10px;
 `;
 
 const ActivitiesPlace = styled.div`
-box-sizing: border-box;
-width: 100%;
-padding: 10px;
-text-align: center;
-display: block;
-margin-top: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  display: block;
+  margin-top: 20px;
 
-h1{
-    font-family: Roboto, sans-serif;
-    font-size: 17px;
-    color: #7b7b7b;
-}
+  h1{
+      font-family: Roboto, sans-serif;
+      font-size: 17px;
+      color: #7b7b7b;
+  }
 `;
 
 const List = styled.div`
-display: block;
-justify-content: center;
+  display: block;
+  justify-content: center;
 `;
