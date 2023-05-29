@@ -39,7 +39,7 @@ export default function Activity({ index, id, name, startTime, endTime, capacity
     let bookingId = [];
     if (bookings) {
       for (let item of bookings) {
-        bookingId.push(item.id);
+        bookingId.push(item.activitiesId);
       }
       setSelectedActivity([...bookingId]);
     }
@@ -51,19 +51,22 @@ export default function Activity({ index, id, name, startTime, endTime, capacity
 
   async function bookUserActivity(activitiesId) {
     try {
-      console.log('here1');
       await bookActivity(activitiesId, token);
-      console.log('here2');
-      // setSelectedActivity([...selectedActivity, activitiesId]);
-      // toast('Inscrito na atividade com sucesso!');
-      // getUserRegisteredActivities(token);
+      setSelectedActivity([...selectedActivity, activitiesId]);
+      toast('Inscrito na atividade com sucesso!');
+      getUserRegisteredActivities();
     } catch (e) {
       toast('Não foi possível se inscrever.');
     }
   }
 
   return (
-    <ActivitiesInfo onClick={() => bookUserActivity(id)} background={selectedActivity.includes(id) ? '#D0FFDB' : '#F1F1F1'} key={index + id} heightmod={handleTime(startTime, endTime)} >
+    <ActivitiesInfo
+      onClick={() => bookUserActivity(id)}
+      background={selectedActivity.includes(id) ? '#D0FFDB' : '#F1F1F1'}
+      key={index + id}
+      heightmod={handleTime(startTime, endTime)}
+    >
       <Info>
         <h1>{name}</h1>
         <h2>{startTime.slice(11, 16)} - {endTime.slice(11, 16)}</h2>

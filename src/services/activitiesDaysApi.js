@@ -51,13 +51,11 @@ export async function getActivitiesBookings(activitiesId, token) {
 }
 
 export async function bookActivity(activitiesId, token) {
-  console.log('here 1.5', token, activitiesId);
-  const { data } = await api.put(`/activities/booking/${activitiesId}`, {
+  const { data } = await api.post(`/activities/booking/${activitiesId}`, {}, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log('here 3', data);
 
   return data;
 }
