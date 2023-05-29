@@ -1,49 +1,68 @@
 import styled from 'styled-components';
-import { EnterOutline, CloseCircleOutline } from 'react-ionicons';
+import { EnterOutline, CloseCircleOutline, CheckmarkCircleOutline } from 'react-ionicons';
+import { useState } from 'react';
 
 export function ActivitiesItens({ activities, dayId, placeId }) {
+  const [color, setColor] = useState('#F1F1F1');
+  const [selectedActivity, setSelectedActivity] = useState([]);
+
   function handleTime(startTime, endTime) {
     const hoursDif = Number(endTime.slice(11, 13)) - Number(startTime.slice(11, 13));
     const minDif = Math.abs(Number(endTime.slice(14, 16)) - Number(startTime.slice(14, 16))) / 60;
 
     const res = hoursDif + minDif;
 
-    console.log('min ', minDif, hoursDif, res);
     return res;
   }
-  //(Number(a.endTime.slice(11, 13)) - Number(a.startTime.slice(11, 16))) + ( Number(a.endTime.slice(14, 16)) -  Number(a.startTime.slice(14, 16)))
 
-  console.log(activities, placeId, dayId);
+  function bookActivity(id) {
+    setColor('#D0FFDB');
+    setSelectedActivity([...selectedActivity, id]);
+  }
+
   return (
     <>
       {activities?.map((a, i) =>
         (a.ActivitiesDays.id === dayId && a.ActivitiesPlace.id === placeId) &&
-        <ActivitiesInfo key={i} heightmod={handleTime(a.startTime, a.endTime)} >
+        <ActivitiesInfo onClick={() => bookActivity(a.id)} background={selectedActivity.includes(a.id) ? color : '#F1F1F1'} key={i + a.id} heightmod={handleTime(a.startTime, a.endTime)} >
           <Info>
             <h1>{a.name}</h1>
-            {/* {setHeightMod(a.startTime.slice(11, 12) - a.endTime.slice(11, 12))} */}
             <h2>{a.startTime.slice(11, 16)} - {a.endTime.slice(11, 16)}</h2>
           </Info>
-          {a.capacity === 0 ?
-            <CapacityContainer>
-              <NoCapacity
-                color={'red'}
-                title={''}
-                height="20px"
-                width="20px"
-              />
-              <Capacity color={'red'}>Esgotado</Capacity>
-            </CapacityContainer> :
-            <CapacityContainer>
-              <Enter
-                color={'green'}
-                title={''}
-                height="20px"
-                width="20px"
-              />
-              <Capacity color={'green'}>{a.capacity} vagas</Capacity>
-            </CapacityContainer>
-          }
+          {selectedActivity.includes(a.id) ?
+            (
+              <CapacityContainer>
+                <Checkmark
+                  color={'green'}
+                  title={''}
+                  height="19px"
+                  width="19px"
+                />
+                <Capacity color={'green'}>Inscrito</Capacity>
+              </CapacityContainer>
+            )
+
+            :
+            (a.capacity === 0 ?
+              <CapacityContainer>
+                <NoCapacity
+                  color={'red'}
+                  title={''}
+                  height="20px"
+                  width="20px"
+                />
+                <Capacity color={'red'}>Esgotado</Capacity>
+              </CapacityContainer> :
+              <CapacityContainer>
+                <Enter
+                  color={'green'}
+                  title={''}
+                  height="20px"
+                  width="20px"
+                />
+                <Capacity color={'green'}>{a.capacity} vagas</Capacity>
+              </CapacityContainer>
+            )}
         </ActivitiesInfo>
       )}
     </>
@@ -53,7 +72,7 @@ export function ActivitiesItens({ activities, dayId, placeId }) {
 const ActivitiesInfo = styled.div`
   justify-content: center;
   object-fit: contain;
-  background-color: #F1F1F1;
+  background: ${props => props.background};
   border: 10px solid white;
   width: 100%;
   height: ${({ heightmod }) => heightmod ? (heightmod) * 100 + 'px' : '100px'};
@@ -87,6 +106,10 @@ const CapacityContainer = styled.div`
   justify-content: center;
   margin-left: 20px;
   margin-right: -20px;
+`;
+
+const Checkmark = styled(CheckmarkCircleOutline)`
+  margin-left: 5px;
 `;
 
 const Enter = styled(EnterOutline)`

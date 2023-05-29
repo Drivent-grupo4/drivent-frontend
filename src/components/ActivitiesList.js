@@ -21,7 +21,7 @@ export function ActivitiesList({ id }) {
         <>
           {places?.map((p, i) =>
             <Boxes>
-              <ActivitiesPlace key={i}><h1>{p.namePlace}</h1></ActivitiesPlace>
+              <ActivitiesPlace key={p.namePlace}><h1>{p.namePlace}</h1></ActivitiesPlace>
               <ActivitiesBox>
                 {activities && id && p.id && (
                   <List>
