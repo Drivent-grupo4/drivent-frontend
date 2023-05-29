@@ -25,7 +25,7 @@ export function ActivitiesList({ id }) {
               <ActivitiesBox>
                 {activities && id && p.id && (
                   <List>
-                    <ActivitiesItens activities={activities} dayId={id} placeId={p.id} />
+                    <ActivitiesItens activities={activities} dayId={id} placeId={p.id} token={token} />
                   </List>
                 )
                 }
