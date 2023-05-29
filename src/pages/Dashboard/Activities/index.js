@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import useActivitiesDays from '../../../hooks/api/useActivitiesDays';
 import weekday from 'dayjs/plugin/weekday';
@@ -26,14 +26,6 @@ export default function Activities({ enrollment, getTicket }) {
   const { ticket } = useTicket();
   const [styledSelected, setStyledSelected] = useState(null);
 
-  useEffect(async() => {
-    if (activitiesDays) {
-      console.log('Days: ', activitiesDays);
-    } else {
-      console.log('bruh');
-    }
-  }, [activitiesDays]);
-
   return (
     <Main>
       <div className="title"> Escolha de Atividades </div>
@@ -55,13 +47,13 @@ export default function Activities({ enrollment, getTicket }) {
             {activitiesDays?.map(({ date, id }, index) => (
               <DayButton
                 type="button"
+                key={id}
                 index={index}
                 styledSelected={styledSelected}
                 onClick={() => {
                   setActivities(true);
                   setId(id);
                   setStyledSelected(index);
-                  console.log(id);
                 }}
               >
                 <span>{dayjs(date).format('DD/MM')}</span>

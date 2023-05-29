@@ -1,19 +1,16 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
-import { getBookings, getUserBooking } from '../services/bookingApi';
+import { useEffect } from 'react';
+import { getUserBooking } from '../services/bookingApi';
 import useToken from '../hooks/useToken';
 import { toast } from 'react-toastify';
 
-export default function HotelConfirmation({ setConfirmation, change, setChange, room, hotelName, setHotelName, setRoom }) {
+export default function HotelConfirmation({ setConfirmation, change, setChange, room, hotelName, setHotelName }) {
   const token = useToken();
-  const [capacity, setCapacity] = useState(null);
 
   useEffect(async() => {    
     try {
       const roomInfo = await getUserBooking(token);
       setHotelName(roomInfo.Room.Hotel);
-      const info = await getBookings(hotelName.id, token);
-      setCapacity(info[roomInfo.Room.id - 1].Booking.length);
     } catch (e) {
       toast(e);
     }
